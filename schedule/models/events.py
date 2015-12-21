@@ -167,6 +167,12 @@ class Event(with_metaclass(ModelBase, *get_model_bases())):
             if self.end_recurring_period and self.end_recurring_period < end:
                 end = self.end_recurring_period
 
+            # Normalize the start and end so that they are synced
+            if not timezone.is_naive(start):
+                start = tzinfo.normalize(start)
+            if not timezone.is_naive(end):
+                end = tzinfo.normalize(end)
+
             rule = self.get_rrule_object(tzinfo)
             start = (start - difference).replace(tzinfo=None)
             end = (end - difference).replace(tzinfo=None)
